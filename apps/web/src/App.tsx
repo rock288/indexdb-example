@@ -1,15 +1,11 @@
 import { useEffect, useState } from "react"
 import "./App.css"
-import {
-  getAllUsers,
-  TypeUser,
-  openDatabase,
-  addUser,
-  deleteUser,
-} from "./indexDB"
+import MuiTable from "./components/data-grid"
+import { addUser, deleteUser, getAllUsers, openDatabase } from "./indexDB"
+import { GridValidRowModel } from "@mui/x-data-grid"
 
 function App() {
-  const [users, setUsers] = useState<TypeUser[]>([])
+  const [users, setUsers] = useState<readonly GridValidRowModel[]>([])
 
   const onGetUsers = async () => {
     await openDatabase()
@@ -26,14 +22,7 @@ function App() {
     onGetUsers()
   }
 
-  // const onRemoveUser = async (event: React.MouseEvent<HTMLButtonElement>) => {
-  //   console.log("ID:", event.currentTarget.dataset.id)
-  //   const id = event.currentTarget.dataset.id
-  //   await deleteUser(parseInt(id ?? "0"))
-  //   await onGetUsers()
-  // }
-
-  const onRemoveUser1 = async (id: number) => {
+  const onRemoveUser = async (id: number) => {
     await deleteUser(id)
     await onGetUsers()
   }
@@ -52,28 +41,8 @@ function App() {
           Add user
         </button>
       </div>
-      <div>
-        {users.map((item, index) => {
-          return (
-            <div key={index} className="flex">
-              <div>
-                Id: {item?.id} {item.name}
-              </div>
-              <div>
-                <button
-                  type="button"
-                  className="border-gray-100 border-2 p-2 rounded-md bg-red-600 hover:bg-red-800 hover:cursor-pointer text-white text-sm"
-                  data-id={item?.id}
-                  // onClick={onRemoveUser}
-                  onClick={() => onRemoveUser1(item?.id ?? 0)}
-                >
-                  Remove
-                </button>
-              </div>
-            </div>
-          )
-        })}
-      </div>
+
+      <MuiTable rows={users} setRows={setUsers} onRemoveUser={onRemoveUser} />
     </div>
   )
 }
